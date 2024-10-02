@@ -126,16 +126,26 @@ RUN \
     /bin/bash -c \
     'set -e &&\
     if [[ "$(dpkg --print-architecture)" == "amd64" ]]; then \
-      apt-get update -qq && \
-      DEBIAN_FRONTEND=noninteractive apt-get install -y -qq --no-install-recommends wget xz-utils build-essential devscripts debhelper && \
-      wget https://answers.launchpad.net/debian/+archive/primary/+sourcefiles/chromium/99.0.4844.84-1/chromium_99.0.4844.84-1.debian.tar.xz && \
-      tar -xf chromium_99.0.4844.84-1.debian.tar.xz && \
-      cd debian && \
-      debuild -us -uc && \
-      dpkg -i ../chromium_99.0.4844.84-1_amd64.deb && \
-      rm -rf ../chromium_99.0.4844.84-1.debian.tar.xz debian && \
-      chromium --version && \
-      rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*; \
+       echo "Step 1: Update apt" && \
+    apt-get update -qq && \
+    echo "Step 2: Install dependencies" && \
+    DEBIAN_FRONTEND=noninteractive apt-get install -y -qq --no-install-recommends wget xz-utils build-essential devscripts debhelper && \
+    echo "Step 3: Download Chromium source" && \
+    wget https://answers.launchpad.net/debian/+archive/primary/+sourcefiles/chromium/99.0.4844.84-1/chromium_99.0.4844.84-1.debian.tar.xz && \
+    echo "Step 4: Extract tarball" && \
+    tar -xf chromium_99.0.4844.84-1.debian.tar.xz && \
+    echo "Step 5: Navigate to debian folder" && \
+    cd debian && \
+    echo "Step 6: Build Chromium package" && \
+    debuild -us -uc && \
+    echo "Step 7: Install Chromium package" && \
+    dpkg -i ../chromium_99.0.4844.84-1_amd64.deb && \
+    echo "Step 8: Cleanup" && \
+    rm -rf ../chromium_99.0.4844.84-1.debian.tar.xz debian && \
+    echo "Step 9: Verify Chromium installation" && \
+    chromium --version && \
+    echo "Step 10: Final cleanup" && \
+    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* ;\
   
     elif [[ "$(dpkg --print-architecture)" == "armhf" ]]; then \
       apt-get update -qq &&\
