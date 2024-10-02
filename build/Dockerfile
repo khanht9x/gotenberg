@@ -127,14 +127,15 @@ RUN \
     'set -e &&\
     if [[ "$(dpkg --print-architecture)" == "amd64" ]]; then \
       apt-get update -qq && \
-      DEBIAN_FRONTEND=noninteractive apt-get install -y -qq --no-install-recommends wget xz-utils build-essential devscripts debhelper && \
-      RUN wget https://answers.launchpad.net/debian/+archive/primary/+sourcefiles/chromium/99.0.4844.84-1/chromium_99.0.4844.84-1.debian.tar.xz && \
+        DEBIAN_FRONTEND=noninteractive apt-get install -y -qq --no-install-recommends wget xz-utils build-essential devscripts debhelper && \
+        wget https://answers.launchpad.net/debian/+archive/primary/+sourcefiles/chromium/99.0.4844.84-1/chromium_99.0.4844.84-1.debian.tar.xz && \
         tar -xf chromium_99.0.4844.84-1.debian.tar.xz && \
         cd debian && \
         debuild -us -uc && \
-        RUN dpkg -i ../chromium_99.0.4844.84-1_amd64.deb && \
-        RUN rm -rf chromium_99.0.4844.84-1.debian.tar.xz debian && \
-    chromium --version; \
+        dpkg -i ../chromium_99.0.4844.84-1_amd64.deb && \
+        rm -rf chromium_99.0.4844.84-1.debian.tar.xz debian && \
+        chromium --version; \
+  
     elif [[ "$(dpkg --print-architecture)" == "armhf" ]]; then \
       apt-get update -qq &&\
       DEBIAN_FRONTEND=noninteractive apt-get install -y -qq --no-install-recommends devscripts &&\
