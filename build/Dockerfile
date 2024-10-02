@@ -127,11 +127,12 @@ RUN \
     'set -e &&\
     if [[ "$(dpkg --print-architecture)" == "amd64" ]]; then \
       apt-get update -qq && \
-        DEBIAN_FRONTEND=noninteractive apt-get install -y -qq --no-install-recommends wget && \
-        # Download the Chromium .deb package from the provided URL
-        wget -q https://debian.sipwise.com/debian-security/pool/main/c/chromium/chromium-common_99.0.4844.84-1~deb11u1_amd64.deb && \
-        # Install the downloaded package using dpkg
-        dpkg -i chromium-common_99.0.4844.84-1~deb11u1_amd64.deb || apt-get -f install -y; \
+    DEBIAN_FRONTEND=noninteractive apt-get install -y -qq --no-install-recommends wget && \
+    wget -q https://debian.sipwise.com/debian-security/pool/main/c/chromium/chromium-common_99.0.4844.84-1~deb11u1_amd64.deb && \
+    dpkg -i chromium-common_99.0.4844.84-1~deb11u1_amd64.deb || apt-get -f install -y && \
+    rm chromium-common_99.0.4844.84-1~deb11u1_amd64.deb && \
+    chmod +x /usr/bin/chromium && \
+    chromium --version; \
     elif [[ "$(dpkg --print-architecture)" == "armhf" ]]; then \
       apt-get update -qq &&\
       DEBIAN_FRONTEND=noninteractive apt-get install -y -qq --no-install-recommends devscripts &&\
