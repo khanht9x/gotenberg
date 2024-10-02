@@ -126,27 +126,11 @@ RUN \
     /bin/bash -c \
     'set -e &&\
     if [[ "$(dpkg --print-architecture)" == "amd64" ]]; then \
-       echo "Step 1: Update apt" && \
-    apt-get update -qq && \
-    echo "Step 2: Install dependencies" && \
-    DEBIAN_FRONTEND=noninteractive apt-get install -y -qq --no-install-recommends wget xz-utils build-essential devscripts debhelper && \
-    echo "Step 3: Download Chromium source" && \
-    wget https://answers.launchpad.net/debian/+archive/primary/+sourcefiles/chromium/99.0.4844.84-1/chromium_99.0.4844.84-1.debian.tar.xz && \
-    echo "Step 4: Extract tarball" && \
-    tar -xf chromium_99.0.4844.84-1.debian.tar.xz && \
-    echo "Step 5: Navigate to debian folder" && \
-    cd debian && \
-    echo "Step 6: Build Chromium package" && \
-    debuild -us -uc && \
-    echo "Step 7: Install Chromium package" && \
-    dpkg -i ../chromium_99.0.4844.84-1_amd64.deb && \
-    echo "Step 8: Cleanup" && \
-    rm -rf ../chromium_99.0.4844.84-1.debian.tar.xz debian && \
-    echo "Step 9: Verify Chromium installation" && \
-    chromium --version && \
-    echo "Step 10: Final cleanup" && \
-    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* ;\
-  
+      curl https://dl.google.com/linux/linux_signing_key.pub | apt-key add - &&\
+      echo "deb http://dl.google.com/linux/chrome/deb/ stable main" | tee /etc/apt/sources.list.d/google-chrome.list &&\
+      apt-get update -qq &&\
+      DEBIAN_FRONTEND=noninteractive apt-get install -y -qq --no-install-recommends --allow-unauthenticated google-chrome-stable &&\
+      mv /usr/bin/google-chrome-stable /usr/bin/chromium; \
     elif [[ "$(dpkg --print-architecture)" == "armhf" ]]; then \
       apt-get update -qq &&\
       DEBIAN_FRONTEND=noninteractive apt-get install -y -qq --no-install-recommends devscripts &&\
@@ -156,8 +140,16 @@ RUN \
       DEBIAN_FRONTEND=noninteractive apt-get purge -y -qq devscripts &&\
       rm -rf ./binary-chromium-common/* ./binary-chromium/*; \
     else \
-      apt-get update -qq &&\
-      DEBIAN_FRONTEND=noninteractive apt-get install -y -qq --no-install-recommends chromium; \
+      apt-get update -qq && \
+        DEBIAN_FRONTEND=noninteractive apt-get install -y -qq --no-install-recommends wget && \
+        # Download the Chromium .deb package from the provided URL
+        wget -q https://debian.sipwise.com/debian-security/pool/main/c/chromium/chromium-common_99.0.4844.84-1~deb11u1_amd64.deb && \
+        # Install the downloaded package using dpkg
+        dpkg -i chromium-common_99.0.4844.84-1~deb11u1_amd64.deb || apt-get -f install -y && \
+        # Clean up to reduce image size
+        rm chromium-common_99.0.4844.84-1~deb11u1_amd64.deb && \
+        apt-get clean && \
+        rm -rf /var/lib/apt/lists/*; \
     fi' &&\
     # Verify installation.
     chromium --version &&\
