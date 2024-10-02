@@ -206,7 +206,7 @@ ENV PDFTK_BIN_PATH=/usr/bin/pdftk
 ENV QPDF_BIN_PATH=/usr/bin/qpdf
 ENV EXIFTOOL_BIN_PATH=/usr/bin/exiftool
 
-USER gotenberg
+USER root
 WORKDIR /home/gotenberg
 
 # Default API port.
