@@ -199,7 +199,7 @@ COPY build/fonts.conf /etc/fonts/conf.d/100-gotenberg.conf
 COPY --from=binary-stage /home/gotenberg /usr/bin/
 
 # # Environment variables required by modules or else.
-ENV CHROMIUM_BIN_PATH=/usr/bin/chromium
+# ENV CHROMIUM_BIN_PATH=/usr/bin/chromium
 ENV LIBREOFFICE_BIN_PATH=/usr/lib/libreoffice/program/soffice.bin
 ENV UNOCONVERTER_BIN_PATH=/usr/bin/unoconverter
 ENV PDFTK_BIN_PATH=/usr/bin/pdftk
