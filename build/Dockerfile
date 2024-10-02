@@ -156,55 +156,55 @@ RUN \
     # Cleanup.
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-# RUN \
-#     # Install LibreOffice & unoconverter.
-#     echo "deb http://deb.debian.org/debian bookworm-backports main" >> /etc/apt/sources.list &&\
-#     apt-get update -qq &&\
-#     DEBIAN_FRONTEND=noninteractive apt-get install -y -qq --no-install-recommends -t bookworm-backports libreoffice &&\
-#     curl -Ls https://raw.githubusercontent.com/gotenberg/unoconverter/v0.0.1/unoconv -o /usr/bin/unoconverter &&\
-#     chmod +x /usr/bin/unoconverter &&\
-#     # unoconverter will look for the Python binary, which has to be at version 3.
-#     ln -s /usr/bin/python3 /usr/bin/python &&\
-#     # Verify installations.
-#     libreoffice --version &&\
-#     unoconverter --version &&\
-#     # Cleanup.
-#     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+RUN \
+    # Install LibreOffice & unoconverter.
+    echo "deb http://deb.debian.org/debian bookworm-backports main" >> /etc/apt/sources.list &&\
+    apt-get update -qq &&\
+    DEBIAN_FRONTEND=noninteractive apt-get install -y -qq --no-install-recommends -t bookworm-backports libreoffice &&\
+    curl -Ls https://raw.githubusercontent.com/gotenberg/unoconverter/v0.0.1/unoconv -o /usr/bin/unoconverter &&\
+    chmod +x /usr/bin/unoconverter &&\
+    # unoconverter will look for the Python binary, which has to be at version 3.
+    ln -s /usr/bin/python3 /usr/bin/python &&\
+    # Verify installations.
+    libreoffice --version &&\
+    unoconverter --version &&\
+    # Cleanup.
+    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-# RUN \
-#     # Install PDFtk, QPDF & ExifTool (PDF engines).
-#     # See https://github.com/gotenberg/gotenberg/pull/273.
-#     curl -o /usr/bin/pdftk-all.jar "https://gitlab.com/api/v4/projects/5024297/packages/generic/pdftk-java/$PDFTK_VERSION/pdftk-all.jar" &&\
-#     chmod a+x /usr/bin/pdftk-all.jar &&\
-#     echo '#!/bin/bash\n\nexec java -jar /usr/bin/pdftk-all.jar "$@"' > /usr/bin/pdftk && \
-#     chmod +x /usr/bin/pdftk &&\
-#     apt-get update -qq &&\
-#     DEBIAN_FRONTEND=noninteractive apt-get install -y -qq --no-install-recommends qpdf exiftool &&\
-#     # See https://github.com/nextcloud/docker/issues/380.
-#     mkdir -p /usr/share/man/man1 &&\
-#     # Verify installations.
-#     pdftk --version &&\
-#     qpdf --version &&\
-#     exiftool --version &&\
-#     # Cleanup.
-#     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+RUN \
+    # Install PDFtk, QPDF & ExifTool (PDF engines).
+    # See https://github.com/gotenberg/gotenberg/pull/273.
+    curl -o /usr/bin/pdftk-all.jar "https://gitlab.com/api/v4/projects/5024297/packages/generic/pdftk-java/$PDFTK_VERSION/pdftk-all.jar" &&\
+    chmod a+x /usr/bin/pdftk-all.jar &&\
+    echo '#!/bin/bash\n\nexec java -jar /usr/bin/pdftk-all.jar "$@"' > /usr/bin/pdftk && \
+    chmod +x /usr/bin/pdftk &&\
+    apt-get update -qq &&\
+    DEBIAN_FRONTEND=noninteractive apt-get install -y -qq --no-install-recommends qpdf exiftool &&\
+    # See https://github.com/nextcloud/docker/issues/380.
+    mkdir -p /usr/share/man/man1 &&\
+    # Verify installations.
+    pdftk --version &&\
+    qpdf --version &&\
+    exiftool --version &&\
+    # Cleanup.
+    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 # # Improve fonts subpixel hinting and smoothing.
 # # Credits:
 # # https://github.com/arachnys/athenapdf/issues/69.
 # # https://github.com/arachnys/athenapdf/commit/ba25a8d80a25d08d58865519c4cd8756dc9a336d.
-# COPY build/fonts.conf /etc/fonts/conf.d/100-gotenberg.conf
+COPY build/fonts.conf /etc/fonts/conf.d/100-gotenberg.conf
 
 # # Copy the Gotenberg binary from the binary stage.
-# COPY --from=binary-stage /home/gotenberg /usr/bin/
+COPY --from=binary-stage /home/gotenberg /usr/bin/
 
 # # Environment variables required by modules or else.
-# ENV CHROMIUM_BIN_PATH=/usr/bin/chromium
-# ENV LIBREOFFICE_BIN_PATH=/usr/lib/libreoffice/program/soffice.bin
-# ENV UNOCONVERTER_BIN_PATH=/usr/bin/unoconverter
-# ENV PDFTK_BIN_PATH=/usr/bin/pdftk
-# ENV QPDF_BIN_PATH=/usr/bin/qpdf
-# ENV EXIFTOOL_BIN_PATH=/usr/bin/exiftool
+ENV CHROMIUM_BIN_PATH=/usr/bin/chromium
+ENV LIBREOFFICE_BIN_PATH=/usr/lib/libreoffice/program/soffice.bin
+ENV UNOCONVERTER_BIN_PATH=/usr/bin/unoconverter
+ENV PDFTK_BIN_PATH=/usr/bin/pdftk
+ENV QPDF_BIN_PATH=/usr/bin/qpdf
+ENV EXIFTOOL_BIN_PATH=/usr/bin/exiftool
 
 USER gotenberg
 WORKDIR /home/gotenberg
@@ -212,5 +212,5 @@ WORKDIR /home/gotenberg
 # Default API port.
 EXPOSE 3000
 
-# ENTRYPOINT [ "/usr/bin/tini", "--" ]
+ENTRYPOINT [ "/usr/bin/tini", "--" ]
 CMD [ "gotenberg" ]
