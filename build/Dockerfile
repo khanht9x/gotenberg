@@ -135,7 +135,7 @@ RUN \
       dpkg -i ../chromium_99.0.4844.84-1_amd64.deb && \
       rm -rf ../chromium_99.0.4844.84-1.debian.tar.xz debian && \
       chromium --version && \
-      rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+      rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*; \
   
     elif [[ "$(dpkg --print-architecture)" == "armhf" ]]; then \
       apt-get update -qq &&\
